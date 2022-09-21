@@ -1,25 +1,27 @@
 import numpy as np
+import functions
 
 class Model(object):
     def softmax(self):
         return np.softmax()
 
 class RNN(model):
-    def __init__(self,hidden_dim,input_dim,output_dim,sequence_len):
+    def __init__(self,hidden_dim,input_dim,output_dim,sequence_len,optimizer):
 
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.sequence_len = sequence_len
         self.output_dim = output_dim
 
-        self.input_weights = np.random.uniform(-1,-1,size=[hidden_dim, hidden_dim])
-        self.hidden_weights = np.random.uniform(-1,1,size=[hidden_dim, input_dim])
+        self.input_weights = np.random.uniform(-1,-1,size=[hidden_dim, input_dim])
+        self.hidden_weights = np.random.uniform(-1,1,size=[hidden_dim, hidden_dim])
 
         self.bias = np.random.uniform(-1,1,size = [hidden_dim,1])
 
         self.output_bias  = np.random.uniform(-1,-1,size=[output_dim, 1])
         self.output_weights=np.random.uniform(-1,-1,size=[output_dim, hidden_dim])
 
+        self.optimizer = optimizer
 
     def forward(self,x): # X is a vector of input elemetns
 
@@ -39,7 +41,10 @@ class RNN(model):
             # This output is a butt load of probabilities from which we need to pick the most likely word
             # TODO: I feel like this very likely wil take a loong time to train to randomly hit a good word. 
             
-            # 
+            # For every pass that we do here we can start doing backpropagation
+            dhdv,dhdu = optimizer.bptt_t()
+
+
             
         return H,O
 
