@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # Generate choice of stories at uniform
     sample_dir_name = os.path.dirname('./Corpus/dailymail/Generated/')
     list_of_files = glob.glob(sample_dir_name+"/*.cstory")
-    print("Sameple dir name : ",sample_dir_name)
+    print("Sample Dir Name",sample_dir_name)
     random_files = np.random.choice(list_of_files,size=training_samples,replace=False)
     
     # Load some Sentences
@@ -45,6 +45,7 @@ if __name__ == '__main__':
     print("Showing 5 of the obtained sentences.")
     for choice in np.random.choice(network_input,size=5,replace=False):
         print(choice)
+
 
     vocabulary_size = len(embeddings_dict)
     # Create Model
