@@ -13,6 +13,7 @@ class LogLossSoftmax_f(object):
                 )
         return final_sum
 
+# Differentantiation w.r.t. to the unnormalized bits
 def LogLossSoftmax_b(self,predictions,ground_truth,inputf='softmax'):
     return predictions-ground_truth
     

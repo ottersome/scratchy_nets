@@ -7,6 +7,7 @@ from sklearn.manifold import TSNE
 import numpy as np
 from rnn_class import RNN
 import nltk.data
+import functions as fucs
 
 embeddings_dict = {}
 training_samples = 100
@@ -54,13 +55,22 @@ if __name__ == '__main__':
             output_dim  =vocabulary_size,
             )
 
-    for batchno in range(num_batchers):
 
-        print("Working on batch number : ",batchno)
-        sentences = np.random.choice(network_input,100,replace=False)
+    print("Working on batch number : ",batchno)
+    sentences = np.random.choice(network_input,100,replace=False)
+    optimizer =Optimizer()
 
-        for sentence in sentences:
-            x = np.asarray([embeddings_dict[word] for word in sentence.split()])
-            model.forward(x)
-        # Do Gradient Descent
+    # Sentences count as batches?
+    for sentence in sentences:
+        x = np.asarray([embeddings_dict[word] for word in sentence.split()])
+        hidden, outputs = model.forward(x)
+
+        # Get SoftMax Probabilities Trought Sequence (VxT)
+        predictions = np.softmax(outputs)
+
+        # Back Propagation Trough Time
+        
+
+
+    # Do Gradient Descent
 
