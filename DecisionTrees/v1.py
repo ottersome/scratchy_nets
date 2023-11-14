@@ -89,6 +89,10 @@ def split_tree(x: pd.DataFrame, y: pd.Series, depth, parent="root", value_ranges
     # Non Terminating
     overall_entropy = calc_entropy(y)
     avg_split_entropy = {}
+    if overall_entropy < 0.1:
+        max_val = y.value_counts().idxmax()
+        # print(str(" " * 4 * (depth + 2)) + "`-> " + max_val)  # 🪲
+        return max_val
 
     # Calculate entropy in split
     for col in x.columns:
@@ -100,9 +104,11 @@ def split_tree(x: pd.DataFrame, y: pd.Series, depth, parent="root", value_ranges
 
     reductions = {k: overall_entropy - v for k, v in avg_split_entropy.items()}
     # Select key with max reduction from reductions
+    # Get max reduction and its key
+    max_val = max(list(reductions.values()))
     max_reduction_feat = max(reductions, key=reductions.get)  # type: ignore
     cur_dict = {max_reduction_feat: {}}  # 💫
-    # print(str(" " * 4 * (depth + 1)) + '|_"' + parent + '" : ' + max_reduction_feat) #🪲
+
     branches = value_ranges[max_reduction_feat]
 
     # Non Terminating Condition
@@ -126,14 +132,19 @@ def split_tree(x: pd.DataFrame, y: pd.Series, depth, parent="root", value_ranges
             # + cur_dict[max_reduction_feat][branch]
             # )🪲
         else:
-            relevant_xs = x[(x[max_reduction_feat] == branch).values]
-            cur_dict[max_reduction_feat][branch] = split_tree(
-                relevant_xs.drop([max_reduction_feat], axis=1),  # type: ignore
-                relevant_ys,
-                depth=depth + 1,
-                parent=branch,
-                value_ranges=value_ranges,
-            )
+            if len(relevant_ys) == 0:
+                cur_dict[max_reduction_feat][branch] = np.random.choice(
+                    ["acc", "unacc"]
+                )
+            else:
+                relevant_xs = x[(x[max_reduction_feat] == branch).values]
+                cur_dict[max_reduction_feat][branch] = split_tree(
+                    relevant_xs.drop([max_reduction_feat], axis=1),  # type: ignore
+                    relevant_ys,
+                    depth=depth + 1,
+                    parent=branch,
+                    value_ranges=value_ranges,
+                )
 
     return cur_dict
 
@@ -170,6 +181,7 @@ if __name__ == "__main__":
     print(f"Dataset has {len(df.columns)} columns and the head looks like:")
     print(df.head())
     print("\n----------------------------------------\n")
+
     # Check what categorical values we have in each column
     for col in df.columns:
         print(f"{col} has {df[col].unique()} with null_count {df[col].isnull().sum()}")
